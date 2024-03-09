@@ -1,6 +1,5 @@
 using Contracts;
 using Contracts.Repositories;
-using Contracts.Services;
 using DataAccess.Migrations;
 using DataAccess.Repositories;
 using Itmo.Dev.Platform.Postgres.Extensions;
