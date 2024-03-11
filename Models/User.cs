@@ -15,10 +15,13 @@ public class User(long userId, long tgId, string name, bool isAdmin)
         return UserId == other.UserId && TgId == other.TgId;
     }
 
-#pragma warning disable CS0659 // Type overrides Object.Equals(object o) but does not override Object.GetHashCode()
     public override bool Equals(object? obj)
-#pragma warning restore CS0659 // Type overrides Object.Equals(object o) but does not override Object.GetHashCode()
     {
         return Equals(obj as User);
+    }
+
+    public override int GetHashCode()
+    {
+        return HashCode.Combine(UserId, TgId);
     }
 }

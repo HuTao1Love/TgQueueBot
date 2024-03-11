@@ -7,7 +7,7 @@ namespace DataAccess.Repositories;
 
 public class UserRepository(IPostgresConnectionProvider provider) : IUserRepository
 {
-    public async Task<User> FindOrCreate(long tgId, string name, bool isAdmin)
+    public async Task<User> FindOrCreate(long tgId, string name)
     {
         NpgsqlConnection connection = await provider.GetConnectionAsync(default);
         NpgsqlCommand command = connection.CreateCommand();
@@ -26,7 +26,7 @@ public class UserRepository(IPostgresConnectionProvider provider) : IUserReposit
 
         command.Parameters.AddWithValue("tgId", tgId);
         command.Parameters.AddWithValue("name", name);
-        command.Parameters.AddWithValue("isAdmin", isAdmin);
+        command.Parameters.AddWithValue("isAdmin", false);
 
         await using NpgsqlDataReader reader = await command.ExecuteReaderAsync();
         await reader.ReadAsync();
@@ -36,5 +36,22 @@ public class UserRepository(IPostgresConnectionProvider provider) : IUserReposit
             tgId: reader.GetInt64(1),
             name: reader.GetString(2),
             isAdmin: reader.GetBoolean(3));
+    }
+
+    public async Task SetAdmin(long tgId, bool isAdmin)
+    {
+        NpgsqlConnection connection = await provider.GetConnectionAsync(default);
+        NpgsqlCommand command = connection.CreateCommand();
+
+        command.CommandText = """
+                              UPDATE users
+                              SET isadmin = @isAdmin
+                              WHERE tgid = @tgId;
+                              """;
+
+        command.Parameters.AddWithValue("tgId", tgId);
+        command.Parameters.AddWithValue("isAdmin", isAdmin);
+
+        await command.ExecuteNonQueryAsync(default);
     }
 }

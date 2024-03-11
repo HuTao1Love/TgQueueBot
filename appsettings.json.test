@@ -1,0 +1,14 @@
+{
+    "ApiToken": "token",
+    "Host": "localhost",
+    "Port": 5432,
+    "Username": "postgres",
+    "Password": "postgres",
+    "Database": "postgres",
+    "BotCreator": 751586125,
+    "DefaultQueueSize": 25,
+    "MaxQueueNameLength": 30,
+    "MaxQueueSize": 98,
+    "BotPrefix": "/",
+    "MaxItemsPerKeyboardLine": 5
+}

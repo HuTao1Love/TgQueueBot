@@ -9,7 +9,7 @@ namespace DataAccess.Extensions;
 
 public static class ServiceCollectionExtensions
 {
-    public static IServiceCollection LoadDatabase(this IServiceCollection collection, IConfig config)
+    public static IServiceCollection LoadDatabase(this IServiceCollection collection, BotConfiguration config)
         => collection
             .AddPlatformPostgres(builder => builder.Configure(configuration =>
             {
