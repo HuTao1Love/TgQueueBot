@@ -1,24 +1,25 @@
 using Telegram.Bot;
 using Telegram.Bot.Types;
-using TelegramBot.Services;
 
 namespace TelegramBot.Commands;
 
 public abstract class CommandBase
 {
-    protected abstract IEnumerable<CheckerBase> Checkers { get; }
+    protected abstract IEnumerable<IChecker> Checkers { get; }
 
-    public async Task<bool> CheckAndExecute(ITelegramBotClient botClient, Update update, CancellationToken token)
+    public async Task<bool> Check(ClientUpdate update, CancellationToken token)
     {
-        bool canExecute = await Checkers
-            .Select(c => c.CheckWithSubCheckers(botClient, update, token))
-            .CheckAllAsync();
+        ArgumentNullException.ThrowIfNull(update);
 
-        if (!canExecute) return false;
+        Console.WriteLine(GetType());
+        foreach (IChecker checker in Checkers)
+        {
+            bool passed = await checker.Check(update, token);
+            if (!passed) return false;
+        }
 
-        await Execute(new ClientUpdate(update, botClient), token);
         return true;
     }
 
-    protected abstract Task Execute(ClientUpdate update, CancellationToken token);
+    public abstract Task Execute(ClientUpdate update, CancellationToken token);
 }

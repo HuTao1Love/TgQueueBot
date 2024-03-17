@@ -10,18 +10,24 @@ namespace TelegramBot.Commands.Commands;
 
 public class MyIdCommand(BotConfiguration configuration, IUserRepository userRepository) : CommandBase
 {
-    protected override IEnumerable<CheckerBase> Checkers { get; } = new[]
+    protected override IEnumerable<IChecker> Checkers { get; } = new[]
     {
         new CommandChecker(configuration.BotPrefix, "myid", "me"),
     };
 
-    protected override async Task Execute(ClientUpdate update, CancellationToken token)
+    public override async Task Execute(ClientUpdate update, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(update);
 
-        string text = $"Your id: ***`{update.Message!.From!.Id}`***\nThis chat id: ***`{update.Message!.Chat!.Id}`***";
+        long? tgId = update.Message?.From?.Id;
+        long? chatId = update.Message?.Chat?.Id;
+        string? username = update.Message?.From?.Username;
 
-        User fromUser = await userRepository.FindOrCreate(update.Message!.From!.Id, update.Message!.From!.Username!);
+        if (tgId is null || chatId is null || username is null) return;
+
+        string text = $"Your id: ***`{tgId}`***\nThis chat id: ***`{chatId}`***";
+
+        User fromUser = await userRepository.FindOrCreate(tgId.Value, username);
 
         if (fromUser.IsAdmin)
         {

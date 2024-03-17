@@ -1,10 +1,6 @@
 {
-    "ApiToken": "token",
-    "Host": "localhost",
-    "Port": 5432,
-    "Username": "postgres",
-    "Password": "postgres",
-    "Database": "postgres",
+    "ApiToken": "ApiToken",
+    "DbConnection": "Host=localhost;Database=postgres;Username=hutao;Password=hutao",
     "BotCreator": 751586125,
     "DefaultQueueSize": 25,
     "MaxQueueNameLength": 30,

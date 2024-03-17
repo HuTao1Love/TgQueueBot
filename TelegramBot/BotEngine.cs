@@ -4,7 +4,6 @@ using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using TelegramBot.Commands;
-using TelegramBot.Services;
 
 namespace TelegramBot;
 
@@ -28,13 +27,30 @@ public class BotEngine(ITelegramBotClient telegramBotClient, IEnumerable<Command
         User me = await telegramBotClient.GetMeAsync();
 
         Console.WriteLine($"Start listening on @{me.Username}");
+        Console.ReadLine();
     }
 
     private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
-        await commands
-            .Select(command => command.CheckAndExecute(botClient, update, cancellationToken))
-            .CheckAllAsync();
+        ArgumentNullException.ThrowIfNull(update);
+
+        if (update.Message?.Text is { } messageText)
+        {
+            Console.WriteLine($"{messageText} at {update.Message.Chat.Id}, {update.Message.MessageId}");
+        }
+
+        if (update.CallbackQuery is { Message: not null } callbackQuery)
+        {
+            Console.WriteLine($"{callbackQuery.Data} at {callbackQuery.Message.Chat.Id}, {callbackQuery.Message.MessageId}");
+        }
+
+        var clientUpdate = new ClientUpdate(update, botClient);
+
+        foreach (CommandBase command in commands)
+        {
+            if (!await command.Check(clientUpdate, cancellationToken)) continue;
+            await command.Execute(clientUpdate, cancellationToken);
+        }
     }
 
     private Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)

@@ -3,13 +3,10 @@ using Telegram.Bot.Types;
 
 namespace TelegramBot.Commands.Checkers;
 
-public class CommandChecker(string prefix, params string[] commands) : CheckerBase
+public class CommandChecker(string prefix, params string[] commands) : IChecker
 {
     private readonly IEnumerable<string> _commands = commands;
-
-    protected override IEnumerable<CheckerBase>? SubCheckers { get; } = new[] { new MessageTextNotNullChecker() };
-
-    protected override Task<bool> Check(ITelegramBotClient telegramBotClient, Update update, CancellationToken token)
+    public Task<bool> Check(ClientUpdate update, CancellationToken token)
     {
         string? text = update?.Message?.Text;
 

@@ -21,4 +21,9 @@ public abstract record KeyboardButton(string Text, string Callback)
     {
         public static string StopCallback => "stop";
     }
+
+    public sealed record CancelKeyboardButton() : KeyboardButton("Cancel", CancelCallback)
+    {
+        public static string CancelCallback => "cancel";
+    }
 }

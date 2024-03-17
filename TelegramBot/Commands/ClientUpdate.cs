@@ -3,6 +3,7 @@ using Telegram.Bot;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
+using TelegramBot.Exceptions;
 
 namespace TelegramBot.Commands;
 
@@ -23,16 +24,23 @@ public class ClientUpdate : Update
 
     public ITelegramBotClient TelegramBotClient { get; }
 
-    public async Task AnswerText(string text, ParseMode? parseMode = null)
+    public async Task<Message> AnswerText(string text, ParseMode? parseMode = null)
     {
-        ArgumentNullException.ThrowIfNull(Message);
-        await TelegramBotClient.SendTextMessageAsync(Message.Chat.Id, text, parseMode: parseMode);
+        if (Message is null) throw new MessageNotProvidedException();
+        return await TelegramBotClient.SendTextMessageAsync(Message.Chat.Id, text, parseMode: parseMode);
     }
 
-    public async Task AnswerWithKeyboard(string text, IReplyMarkup markup)
+    public async Task<Message> AnswerWithKeyboard(string text, IReplyMarkup markup)
     {
-        ArgumentNullException.ThrowIfNull(Message);
+        if (Message is null) throw new MessageNotProvidedException();
         ArgumentNullException.ThrowIfNull(markup);
-        await TelegramBotClient.SendTextMessageAsync(Message.Chat.Id, text, replyMarkup: markup);
+        return await TelegramBotClient.SendTextMessageAsync(Message.Chat.Id, text, replyMarkup: markup);
+    }
+
+    public async Task AnswerCallbackQuery(string text)
+    {
+        if (CallbackQuery?.Message is null) throw new CallbackQueryNotProvidedException();
+
+        await TelegramBotClient.AnswerCallbackQueryAsync(CallbackQuery.Id, text, true);
     }
 }

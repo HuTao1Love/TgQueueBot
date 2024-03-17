@@ -3,13 +3,12 @@ using Telegram.Bot.Types;
 
 namespace TelegramBot.Commands.Checkers;
 
-public class CallbackDataChecker(params string[] dataStartWith) : CheckerBase
+public class CallbackDataChecker(params string[] dataStartWith) : IChecker
 {
-    protected override IEnumerable<CheckerBase>? SubCheckers => null;
-
-    protected override Task<bool> Check(ITelegramBotClient telegramBotClient, Update update, CancellationToken token)
+    public Task<bool> Check(ClientUpdate update, CancellationToken token)
     {
         string? callback = update?.CallbackQuery?.Data;
-        return Task.FromResult(callback is not null && dataStartWith.Any(i => callback.StartsWith(i, StringComparison.InvariantCultureIgnoreCase)));
+        return Task.FromResult(callback is not null && dataStartWith.Any(
+            i => callback.StartsWith(i, StringComparison.OrdinalIgnoreCase)));
     }
 }

@@ -9,9 +9,9 @@ public class QueueService(IQueueRepository queueRepository, IUserQueueRepository
 {
     public async Task<Queue> CreateQueue(long tgChatId, long tgMessageId, string name, int size)
     {
-        QueueData queueData = await queueRepository.Create(tgChatId, tgMessageId, name, size);
+        QueueData queueInformation = await queueRepository.Create(tgChatId, tgMessageId, name, size);
 
-        return new Queue(queueData.Id, queueData.TgChatId, queueData.TgMessageId, queueData.Name, new List<User?>(size));
+        return new Queue(queueInformation.Id, queueInformation.TgChatId, queueInformation.TgMessageId, queueInformation.Name, new List<User?>(new User?[size]));
     }
 
     public async Task<Queue?> FindQueue(long tgChatId, long tgMessageId)
@@ -20,21 +20,25 @@ public class QueueService(IQueueRepository queueRepository, IUserQueueRepository
 
         if (queueData is null) return null;
 
-        var users = new List<User?>(queueData.Size);
+        var users = new List<User?>(new User?[queueData.Size]);
 
-        userQueueRepository
-            .FindUsersByQueueId(queueData.Id)
-            .ToBlockingEnumerable(default)
+        IEnumerable<UsersQueueData> data = await userQueueRepository
+            .FindUsersByQueueId(queueData.Id);
+
+        data
+            .Select(i => new
+            {
+                i.Position,
+                User=new User(i.UserData.Id, i.UserData.TgId, i.UserData.Name, i.UserData.IsAdmin),
+            })
             .ToList()
-            .ForEach(i => users[i.Position - 1] = i.User);
+            .ForEach(i => users[i.Position] = i.User);
 
         return new Queue(queueData.Id, queueData.TgChatId, queueData.TgMessageId, queueData.Name, users);
     }
 
     public async Task<QueueUpdateResult> UserAction(long tgChatId, long tgMessageId, User user, int position)
     {
-        --position;
-
         Queue queue = await FindQueue(tgChatId, tgMessageId) ?? throw new QueueNotFoundException();
 
         int? positionOfUser = queue.Users
@@ -45,13 +49,13 @@ public class QueueService(IQueueRepository queueRepository, IUserQueueRepository
         {
             if (positionOfUser != position)
             {
-                return new QueueUpdateResult.AlreadyInQueueResult();
+                return new QueueUpdateResult.AlreadyInQueueResult(queue);
             }
 
             queue.Users[position] = null;
             await userQueueRepository.RemoveUser(queue.Id, user);
 
-            return new QueueUpdateResult.SuccessfulQuitResult();
+            return new QueueUpdateResult.SuccessfulQuitResult(queue);
         }
 
         if (queue.Users[position] is null)
@@ -76,13 +80,32 @@ public class QueueService(IQueueRepository queueRepository, IUserQueueRepository
 
         return availableAfter.HasValue
             ? await SetUserToPosition(queue, user, availableAfter.Value)
-            : new QueueUpdateResult.QueueIsFullResult();
+            : new QueueUpdateResult.QueueIsFullResult(queue);
+    }
+
+    public async Task<Queue> ResetQueue(Queue queue)
+    {
+        ArgumentNullException.ThrowIfNull(queue);
+        queue.Users = new List<User?>(new User?[queue.Size]);
+        await userQueueRepository.RemoveUsersByQueueId(queue.Id);
+        return queue;
+    }
+
+    public async Task<Queue?> DeleteQueue(long tgChatId, long tgMessageId)
+    {
+        Queue? queue = await FindQueue(tgChatId, tgMessageId);
+        if (queue is null) return null;
+
+        await userQueueRepository.RemoveUsersByQueueId(queue.Id);
+        await queueRepository.Remove(tgChatId, tgMessageId);
+
+        return queue;
     }
 
     private async Task<QueueUpdateResult> SetUserToPosition(Queue queue, User user, int position)
     {
         queue.Users[position] = user;
         await userQueueRepository.AddUser(queue.Id, user, position);
-        return new QueueUpdateResult.SuccessfulEnterResult(position + 1);
+        return new QueueUpdateResult.SuccessfulEnterResult(queue, position + 1);
     }
 }
