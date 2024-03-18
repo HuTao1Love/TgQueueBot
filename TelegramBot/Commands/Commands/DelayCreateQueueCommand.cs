@@ -11,6 +11,7 @@ namespace TelegramBot.Commands.Commands;
 
 public class DelayCreateQueueCommand(
     BotConfiguration configuration,
+    BotContext context,
     IUserRepository userRepository,
     IQueueService queueService) : CommandBase
 {
@@ -34,7 +35,8 @@ public class DelayCreateQueueCommand(
 
         if (text.Count < 3)
         {
-            await update.AnswerText("Usage: /delaycreatequeue <time, HH:MM:SS or HH:MM or int value - seconds> <size, default=25> <name>");
+            await update.AnswerText(
+                "Usage: /delaycreatequeue <time, HH:MM:SS or HH:MM or int value - seconds> <size, default=25> <name>");
             return;
         }
 
@@ -69,7 +71,20 @@ public class DelayCreateQueueCommand(
                 .AddItems(new KeyboardButton.CancelKeyboardButton())
                 .ToTelegramKeyboardMarkup());
 
-        await Task.Delay(time - DateTime.Now, token);
-        await CreateQueueCommand.CreateQueue(update, queueService, sent, name, queueSize, configuration.MaxItemsPerKeyboardLine, token);
+        var id = new MessageIdentifier(sent.Chat.Id, sent.MessageId);
+
+        CancellationTokenSource cts = context.CancellationTokenDictionary.GetOrAdd(
+                id,
+                new CancellationTokenSource());
+        await Task.Delay(time - DateTime.Now, cts.Token);
+        await CreateQueueCommand.CreateQueue(
+            update,
+            queueService,
+            sent,
+            name,
+            queueSize,
+            configuration.MaxItemsPerKeyboardLine,
+            cts.Token);
+        context.CancellationTokenDictionary.TryRemove(new KeyValuePair<MessageIdentifier, CancellationTokenSource>(id, cts));
     }
 }

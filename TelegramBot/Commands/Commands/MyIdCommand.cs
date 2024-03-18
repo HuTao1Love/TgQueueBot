@@ -1,7 +1,5 @@
 using Contracts;
 using Contracts.Repositories;
-using Telegram.Bot;
-using Telegram.Bot.Types;
 using Telegram.Bot.Types.Enums;
 using TelegramBot.Commands.Checkers;
 using User = Models.User;

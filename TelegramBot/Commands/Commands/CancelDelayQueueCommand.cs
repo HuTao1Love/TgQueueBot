@@ -5,7 +5,7 @@ using TelegramBot.Services;
 
 namespace TelegramBot.Commands.Commands;
 
-public class CancelDelayQueueCommand(IUserRepository userRepository) : CommandBase
+public class CancelDelayQueueCommand(BotContext context, IUserRepository userRepository) : CommandBase
 {
     protected override IEnumerable<IChecker> Checkers { get; } = new IChecker[]
     {
@@ -16,9 +16,14 @@ public class CancelDelayQueueCommand(IUserRepository userRepository) : CommandBa
     public override async Task Execute(ClientUpdate update, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(update);
-        if (update.Message is null) return;
+        if (update.CallbackQuery?.Message is not { } message) return;
 
-        // now it's only removes button, TODO stop task.Delay in DelayCreateQueueCommand
-        await update.Message.EditTextAsync(update.TelegramBotClient, "Queue creation stopped", null, token);
+        await message.EditTextAsync(update.TelegramBotClient, "Queue creation stopped", null, token);
+        if (context.CancellationTokenDictionary.TryGetValue(
+                new MessageIdentifier(message.Chat.Id, message.MessageId),
+                out CancellationTokenSource? cts))
+        {
+            await cts.CancelAsync();
+        }
     }
 }

@@ -1,6 +1,3 @@
-using Telegram.Bot;
-using Telegram.Bot.Types;
-
 namespace TelegramBot.Commands;
 
 public abstract class CommandBase
@@ -11,11 +8,9 @@ public abstract class CommandBase
     {
         ArgumentNullException.ThrowIfNull(update);
 
-        Console.WriteLine(GetType());
         foreach (IChecker checker in Checkers)
         {
-            bool passed = await checker.Check(update, token);
-            if (!passed) return false;
+            if (!await checker.Check(update, token)) return false;
         }
 
         return true;

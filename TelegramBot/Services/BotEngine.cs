@@ -2,33 +2,31 @@ using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
-using Telegram.Bot.Types.Enums;
 using TelegramBot.Commands;
 
-namespace TelegramBot;
+namespace TelegramBot.Services;
 
-public class BotEngine(ITelegramBotClient telegramBotClient, IEnumerable<CommandBase> commands)
+public class BotEngine(ITelegramBotClient telegramBotClient, IEnumerable<CommandBase> commands, BotContext botContext)
 {
     public async Task ListenForMessagesAsync()
     {
-        using var cts = new CancellationTokenSource();
-
-        var receiverOptions = new ReceiverOptions
-        {
-            AllowedUpdates = Array.Empty<UpdateType>(), // receive all update types
-        };
-
-        telegramBotClient.StartReceiving(
-            updateHandler: HandleUpdateAsync,
-            pollingErrorHandler: HandlePollingErrorAsync,
-            receiverOptions: receiverOptions,
-            cancellationToken: cts.Token);
+        var receiverOptions = new ReceiverOptions { AllowedUpdates = { }, }; // receive all update types
 
         User me = await telegramBotClient.GetMeAsync();
-
         Console.WriteLine($"Start listening on @{me.Username}");
-        Console.ReadLine();
+
+        await telegramBotClient.ReceiveAsync(
+            CreateUpdateHandler(),
+            receiverOptions: receiverOptions,
+            cancellationToken: botContext.UpdateReceivingTokenSource.Token);
+
+        Console.WriteLine("Stopped listening");
     }
+
+    private IUpdateHandler CreateUpdateHandler()
+        => new UpdateHandlerNotAwaitUpdatesProxy(
+            new UpdateHandlerCatchExceptionsProxy(
+                new DefaultUpdateHandler(HandleUpdateAsync, HandlePollingErrorAsync)));
 
     private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {

@@ -3,8 +3,8 @@ using Contracts;
 using Database.Extensions;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
-using TelegramBot;
 using TelegramBot.Extensions;
+using TelegramBot.Services;
 
 IConfigurationRoot config = new ConfigurationBuilder()
     .AddJsonFile("appsettings.json", optional: false)

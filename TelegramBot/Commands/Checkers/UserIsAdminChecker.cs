@@ -1,6 +1,5 @@
 using Contracts.Repositories;
 using Telegram.Bot;
-using Telegram.Bot.Types;
 using TelegramBot.Exceptions;
 using User = Models.User;
 

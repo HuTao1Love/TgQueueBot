@@ -1,6 +1,3 @@
-using Telegram.Bot;
-using Telegram.Bot.Types;
-
 namespace TelegramBot.Commands.Checkers;
 
 public class CommandChecker(string prefix, params string[] commands) : IChecker

@@ -2,6 +2,7 @@ using Contracts;
 using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot;
 using TelegramBot.Commands;
+using TelegramBot.Services;
 
 namespace TelegramBot.Extensions;
 
@@ -17,8 +18,9 @@ public static class ServiceCollectionExtensions
             .ToList()
             .ForEach(t => collection.AddScoped(commandBaseType, t));
 
-        collection.AddScoped<ITelegramBotClient>(x => new TelegramBotClient(configuration.ApiToken));
-
-        return collection.AddScoped<BotEngine>();
+        return collection
+            .AddScoped<ITelegramBotClient>(x => new TelegramBotClient(configuration.ApiToken))
+            .AddScoped<BotEngine>()
+            .AddSingleton<BotContext>();
     }
 }

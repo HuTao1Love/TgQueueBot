@@ -1,5 +1,3 @@
-using Models;
-
 namespace Contracts.Repositories;
 
 public interface IQueueRepository
