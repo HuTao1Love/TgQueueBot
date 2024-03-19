@@ -6,14 +6,14 @@ using User = Models.User;
 
 namespace TelegramBot.Commands.Commands;
 
-public class MyIdCommand(BotConfiguration configuration, IUserRepository userRepository) : CommandBase
+public class MyIdCommand(BotConfiguration configuration, IUserRepository userRepository) : ICommand
 {
-    protected override IEnumerable<IChecker> Checkers { get; } = new[]
+    public IEnumerable<IChecker> Checkers { get; } = new[]
     {
         new CommandChecker(configuration.BotPrefix, "myid", "me"),
     };
 
-    public override async Task Execute(ClientUpdate update, CancellationToken token)
+    public async Task Execute(ClientUpdate update, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(update);
 

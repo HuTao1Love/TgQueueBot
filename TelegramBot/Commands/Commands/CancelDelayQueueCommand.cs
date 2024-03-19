@@ -5,15 +5,15 @@ using TelegramBot.Services;
 
 namespace TelegramBot.Commands.Commands;
 
-public class CancelDelayQueueCommand(BotContext context, IUserRepository userRepository) : CommandBase
+public class CancelDelayQueueCommand(BotContext context, IUserRepository userRepository) : ICommand
 {
-    protected override IEnumerable<IChecker> Checkers { get; } = new IChecker[]
+    public IEnumerable<IChecker> Checkers { get; } = new IChecker[]
     {
         new CallbackDataChecker(KeyboardButton.CancelKeyboardButton.CancelCallback),
         new UserIsAdminChecker(userRepository, "You must be an admin to do this"),
     };
 
-    public override async Task Execute(ClientUpdate update, CancellationToken token)
+    public async Task Execute(ClientUpdate update, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(update);
         if (update.CallbackQuery?.Message is not { } message) return;

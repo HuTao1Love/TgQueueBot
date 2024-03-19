@@ -14,15 +14,15 @@ public class DelayCreateQueueCommand(
     BotContext context,
     IUserRepository userRepository,
     IQueueService queueService,
-    CultureInfo cultureInfo) : CommandBase
+    CultureInfo cultureInfo) : ICommand
 {
-    protected override IEnumerable<IChecker> Checkers { get; } = new IChecker[]
+    public IEnumerable<IChecker> Checkers { get; } = new IChecker[]
     {
         new CommandChecker(configuration.BotPrefix, "delaycreateq", "delaycreatequeue", "delaystartq", "delaystartqueue"),
         new UserIsAdminChecker(userRepository, "You are not admin"),
     };
 
-    public override async Task Execute(ClientUpdate update, CancellationToken token)
+    public async Task Execute(ClientUpdate update, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(update);
 

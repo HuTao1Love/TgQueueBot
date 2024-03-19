@@ -5,15 +5,15 @@ using TelegramBot.Commands.Checkers;
 
 namespace TelegramBot.Commands.Commands;
 
-public class QueueListCommand(BotConfiguration configuration, IUserRepository userRepository, IQueueRepository queueRepository) : CommandBase
+public class QueueListCommand(BotConfiguration configuration, IUserRepository userRepository, IQueueRepository queueRepository) : ICommand
 {
-    protected override IEnumerable<IChecker> Checkers { get; } = new IChecker[]
+    public IEnumerable<IChecker> Checkers { get; } = new IChecker[]
     {
         new CommandChecker(configuration.BotPrefix, "listq", "listqueue"),
         new UserIsAdminChecker(userRepository, "You are not an admin"),
     };
 
-    public override async Task Execute(ClientUpdate update, CancellationToken token)
+    public async Task Execute(ClientUpdate update, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(update);
 

@@ -5,15 +5,15 @@ using TelegramBot.Services;
 
 namespace TelegramBot.Commands.Commands;
 
-public class ShutdownCommand(BotConfiguration configuration, BotContext context) : CommandBase
+public class ShutdownCommand(BotConfiguration configuration, BotContext context) : ICommand
 {
-    protected override IEnumerable<IChecker> Checkers { get; } = new IChecker[]
+    public IEnumerable<IChecker> Checkers { get; } = new IChecker[]
     {
         new CommandChecker(configuration.BotPrefix, "shutdown"),
         new UserIsCreatorChecker(configuration, "Only for Hu Tao"),
     };
 
-    public override async Task Execute(ClientUpdate update, CancellationToken token)
+    public async Task Execute(ClientUpdate update, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(update);
 

@@ -8,15 +8,15 @@ using TelegramBot.Services;
 
 namespace TelegramBot.Commands.Commands;
 
-public class ResetQueueCommand(BotConfiguration configuration, IQueueService service, IUserRepository userRepository) : CommandBase
+public class ResetQueueCommand(BotConfiguration configuration, IQueueService service, IUserRepository userRepository) : ICommand
 {
-    protected override IEnumerable<IChecker> Checkers { get; } = new IChecker[]
+    public IEnumerable<IChecker> Checkers { get; } = new IChecker[]
     {
         new CallbackDataChecker(KeyboardButton.ResetKeyboardButton.ResetCallback),
         new UserIsAdminChecker(userRepository, "You are not an admin"),
     };
 
-    public override async Task Execute(ClientUpdate update, CancellationToken token)
+    public async Task Execute(ClientUpdate update, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(update);
 

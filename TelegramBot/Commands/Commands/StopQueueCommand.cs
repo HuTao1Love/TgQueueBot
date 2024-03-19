@@ -7,15 +7,15 @@ using TelegramBot.Services;
 
 namespace TelegramBot.Commands.Commands;
 
-public class StopQueueCommand(IQueueService service, IUserRepository userRepository) : CommandBase
+public class StopQueueCommand(IQueueService service, IUserRepository userRepository) : ICommand
 {
-    protected override IEnumerable<IChecker> Checkers { get; } = new IChecker[]
+    public IEnumerable<IChecker> Checkers { get; } = new IChecker[]
     {
         new CallbackDataChecker(KeyboardButton.StopKeyboardButton.StopCallback),
         new UserIsAdminChecker(userRepository, "You are not admin"),
     };
 
-    public override async Task Execute(ClientUpdate update, CancellationToken token)
+    public async Task Execute(ClientUpdate update, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(update);
 

@@ -6,15 +6,15 @@ using User = Models.User;
 
 namespace TelegramBot.Commands.Commands;
 
-public class SetAdminCommand(BotConfiguration configuration, IUserRepository userRepository) : CommandBase
+public class SetAdminCommand(BotConfiguration configuration, IUserRepository userRepository) : ICommand
 {
-    protected override IEnumerable<IChecker> Checkers { get; } = new IChecker[]
+    public IEnumerable<IChecker> Checkers { get; } = new IChecker[]
     {
         new CommandChecker(configuration.BotPrefix, "admin", "setadmin"),
         new UserIsCreatorChecker(configuration, "Only for Hu Tao"),
     };
 
-    public override async Task Execute(ClientUpdate update, CancellationToken token)
+    public async Task Execute(ClientUpdate update, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(update);
 

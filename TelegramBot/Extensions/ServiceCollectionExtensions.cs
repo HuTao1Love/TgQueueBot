@@ -12,7 +12,7 @@ public static class ServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(configuration);
 
-        Type commandBaseType = typeof(CommandBase);
+        Type commandBaseType = typeof(ICommand);
         commandBaseType.Assembly.GetTypes()
             .Where(t => t is { IsClass: true, IsAbstract: false } && t.IsSubclassOf(commandBaseType))
             .ToList()

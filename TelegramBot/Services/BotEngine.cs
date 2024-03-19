@@ -6,7 +6,7 @@ using TelegramBot.Commands;
 
 namespace TelegramBot.Services;
 
-public class BotEngine(ITelegramBotClient telegramBotClient, IEnumerable<CommandBase> commands, BotContext botContext)
+public class BotEngine(ITelegramBotClient telegramBotClient, IEnumerable<ICommand> commands, BotContext botContext)
 {
     public async Task ListenForMessagesAsync()
     {
@@ -44,7 +44,7 @@ public class BotEngine(ITelegramBotClient telegramBotClient, IEnumerable<Command
 
         var clientUpdate = new ClientUpdate(update, botClient);
 
-        foreach (CommandBase command in commands)
+        foreach (ICommand command in commands)
         {
             if (!await command.Check(clientUpdate, cancellationToken)) continue;
             await command.Execute(clientUpdate, cancellationToken);

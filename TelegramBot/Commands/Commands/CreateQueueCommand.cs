@@ -8,9 +8,9 @@ using TelegramBot.Services;
 
 namespace TelegramBot.Commands.Commands;
 
-public class CreateQueueCommand(BotConfiguration configuration, IUserRepository userRepository, IQueueService queueService) : CommandBase
+public class CreateQueueCommand(BotConfiguration configuration, IUserRepository userRepository, IQueueService queueService) : ICommand
 {
-    protected override IEnumerable<IChecker> Checkers { get; } = new IChecker[]
+    public IEnumerable<IChecker> Checkers { get; } = new IChecker[]
     {
         new CommandChecker(configuration.BotPrefix, "createq", "createqueue", "startq", "startqueue"),
         new UserIsAdminChecker(userRepository, "You are not admin"),
@@ -31,7 +31,7 @@ public class CreateQueueCommand(BotConfiguration configuration, IUserRepository 
             token: token);
     }
 
-    public override async Task Execute(ClientUpdate update, CancellationToken token)
+    public async Task Execute(ClientUpdate update, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(update);
 
