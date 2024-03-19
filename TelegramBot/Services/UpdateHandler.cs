@@ -14,12 +14,12 @@ public class UpdateHandler(IEnumerable<ICommand> commands) : IUpdateHandler
 
         if (update.Message?.Text is { } messageText)
         {
-            Console.WriteLine($"{messageText} at {update.Message.Chat.Id}, {update.Message.MessageId}");
+            Console.WriteLine($"{messageText} at {update.Message.Chat.Title}, {update.Message.From?.Username}, {update.Message.MessageId}");
         }
 
         if (update.CallbackQuery is { Message: not null } callbackQuery)
         {
-            Console.WriteLine($"{callbackQuery.Data} at {callbackQuery.Message.Chat.Id}, {callbackQuery.Message.MessageId}");
+            Console.WriteLine($"{callbackQuery.Data} at {callbackQuery.Message.Chat.Title}, {callbackQuery.Message.MessageId}, {callbackQuery.Data}");
         }
 
         var clientUpdate = new ClientUpdate(update, botClient);

@@ -17,6 +17,8 @@ public static class DateTimeHelper
             return DateTime.Now.AddSeconds(fromIntValue);
         }
 
+        Console.WriteLine(dateTimeObject);
+
         if (!TimeOnly.TryParseExact(
                 dateTimeObject,
                 Formats,
