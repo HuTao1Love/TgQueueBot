@@ -19,7 +19,7 @@ public static class DateTimeHelper
                 Formats,
                 cultureInfo,
                 DateTimeStyles.None,
-                out TimeOnly fromTimeOnlyValue)) throw new ArgumentException("Invalid format of DateTime");
+                out TimeOnly fromTimeOnlyValue)) throw new ArgumentException("Invalid format of time");
 
         var value = new DateTime(DateOnly.FromDateTime(DateTime.Now), fromTimeOnlyValue);
         if (value < DateTime.Now) value = value.AddDays(1);
