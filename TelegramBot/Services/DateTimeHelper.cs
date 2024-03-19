@@ -4,7 +4,7 @@ namespace TelegramBot.Services;
 
 public static class DateTimeHelper
 {
-    private static readonly string[] Formats = { "HH:MM", "HH:MM:SS" };
+    private static readonly string[] Formats = { "hh:mm", "hh:mm:ss" };
 
     public static DateTime DateTimeFromString(this string dateTimeObject)
         => DateTimeFromString(dateTimeObject, null);
