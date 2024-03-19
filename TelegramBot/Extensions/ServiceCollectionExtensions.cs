@@ -1,3 +1,4 @@
+using System.Reflection;
 using Contracts;
 using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot;
@@ -12,11 +13,11 @@ public static class ServiceCollectionExtensions
     {
         ArgumentNullException.ThrowIfNull(configuration);
 
-        Type commandBaseType = typeof(ICommand);
-        commandBaseType.Assembly.GetTypes()
-            .Where(t => t is { IsClass: true, IsAbstract: false } && t.IsSubclassOf(commandBaseType))
+        Type baseType = typeof(ICommand);
+        Assembly.GetExecutingAssembly().GetTypes()
+            .Where(t => t is { IsClass: true, IsAbstract: false } && t.GetInterfaces().Contains(baseType))
             .ToList()
-            .ForEach(t => collection.AddScoped(commandBaseType, t));
+            .ForEach(t => collection.AddScoped(baseType, t));
 
         return collection
             .AddScoped<ITelegramBotClient>(x => new TelegramBotClient(configuration.ApiToken))
