@@ -2,6 +2,7 @@ using Contracts;
 using Contracts.Repositories;
 using Contracts.Services;
 using Models;
+using Telegram.Bot;
 using Telegram.Bot.Types;
 using TelegramBot.Commands.Checkers;
 using TelegramBot.Services;
@@ -26,6 +27,7 @@ public class CreateQueueCommand(BotConfiguration configuration, IUserRepository 
         ArgumentNullException.ThrowIfNull(sent);
 
         Queue queue = await service.CreateQueue(sent.Chat.Id, sent.MessageId, name, size);
+        await sent.PinMessageAsync(update.TelegramBotClient, token: token);
         await update.TelegramBotClient.EditTextAsync(
             sent.Chat.Id,
             sent.MessageId,

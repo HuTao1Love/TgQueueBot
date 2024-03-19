@@ -1,5 +1,6 @@
 using Models;
 using Telegram.Bot;
+using Telegram.Bot.Exceptions;
 using Telegram.Bot.Types;
 using Telegram.Bot.Types.ReplyMarkups;
 using KeyboardButton = Models.KeyboardButton;
@@ -40,6 +41,39 @@ public static class TelegramBotClientExtensions
     {
         ArgumentNullException.ThrowIfNull(message);
         return await client.EditTextAsync(message.Chat.Id, message.MessageId, text, markup, token);
+    }
+
+    public static async Task PinMessageAsync(
+        this Message message,
+        ITelegramBotClient client,
+        bool disableNotification = false,
+        CancellationToken token = default)
+    {
+        ArgumentNullException.ThrowIfNull(message);
+
+        try
+        {
+            await client.PinChatMessageAsync(message.Chat.Id, message.MessageId, disableNotification, token);
+        }
+        catch (ApiRequestException)
+        {
+        }
+    }
+
+    public static async Task UnpinMessageAsync(
+        this Message message,
+        ITelegramBotClient client,
+        CancellationToken token = default)
+    {
+        ArgumentNullException.ThrowIfNull(message);
+
+        try
+        {
+            await client.UnpinChatMessageAsync(message.Chat.Id, message.MessageId, token);
+        }
+        catch (ApiRequestException)
+        {
+        }
     }
 
     private static IEnumerable<InlineKeyboardButton> ToInlineKeyboardButtons(this IEnumerable<KeyboardButton> buttons)
