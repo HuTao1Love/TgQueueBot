@@ -10,6 +10,9 @@ namespace TelegramBot.Commands.Commands;
 
 public class CreateQueueCommand(BotConfiguration configuration, IUserRepository userRepository, IQueueService queueService) : ICommand
 {
+    public string? Name => "createq";
+    public string? Description => "Create new queue";
+
     public IEnumerable<IChecker> Checkers { get; } = new IChecker[]
     {
         new CommandChecker(configuration.BotPrefix, "createq", "createqueue", "startq", "startqueue"),

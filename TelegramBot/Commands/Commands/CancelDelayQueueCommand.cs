@@ -7,6 +7,9 @@ namespace TelegramBot.Commands.Commands;
 
 public class CancelDelayQueueCommand(BotContext context, IUserRepository userRepository) : ICommand
 {
+    public string? Name => null;
+    public string? Description => null;
+
     public IEnumerable<IChecker> Checkers { get; } = new IChecker[]
     {
         new CallbackDataChecker(KeyboardButton.CancelKeyboardButton.CancelCallback),

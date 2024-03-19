@@ -8,6 +8,9 @@ namespace TelegramBot.Commands.Commands;
 
 public class SetAdminCommand(BotConfiguration configuration, IUserRepository userRepository) : ICommand
 {
+    public string? Name => "admin";
+    public string? Description => "Set admin (need reply to user's message)";
+
     public IEnumerable<IChecker> Checkers { get; } = new IChecker[]
     {
         new CommandChecker(configuration.BotPrefix, "admin", "setadmin"),

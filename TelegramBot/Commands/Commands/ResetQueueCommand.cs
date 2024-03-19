@@ -10,6 +10,9 @@ namespace TelegramBot.Commands.Commands;
 
 public class ResetQueueCommand(BotConfiguration configuration, IQueueService service, IUserRepository userRepository) : ICommand
 {
+    public string? Name => null;
+    public string? Description => null;
+
     public IEnumerable<IChecker> Checkers { get; } = new IChecker[]
     {
         new CallbackDataChecker(KeyboardButton.ResetKeyboardButton.ResetCallback),

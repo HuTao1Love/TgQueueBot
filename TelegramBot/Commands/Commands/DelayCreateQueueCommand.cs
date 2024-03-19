@@ -16,6 +16,9 @@ public class DelayCreateQueueCommand(
     IQueueService queueService,
     CultureInfo cultureInfo) : ICommand
 {
+    public string? Name => "delaystartq";
+    public string? Description => "Await time and create queue";
+
     public IEnumerable<IChecker> Checkers { get; } = new IChecker[]
     {
         new CommandChecker(configuration.BotPrefix, "delaycreateq", "delaycreatequeue", "delaystartq", "delaystartqueue"),

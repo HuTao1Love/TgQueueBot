@@ -7,6 +7,9 @@ namespace TelegramBot.Commands.Commands;
 
 public class ShutdownCommand(BotConfiguration configuration, BotContext context) : ICommand
 {
+    public string? Name => "shutdown";
+    public string? Description => "Shutdown bot";
+
     public IEnumerable<IChecker> Checkers { get; } = new IChecker[]
     {
         new CommandChecker(configuration.BotPrefix, "shutdown"),

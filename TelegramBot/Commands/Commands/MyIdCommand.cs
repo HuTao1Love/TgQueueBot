@@ -8,6 +8,9 @@ namespace TelegramBot.Commands.Commands;
 
 public class MyIdCommand(BotConfiguration configuration, IUserRepository userRepository) : ICommand
 {
+    public string? Name => "me";
+    public string? Description => "Watch my id and chat id";
+
     public IEnumerable<IChecker> Checkers { get; } = new[]
     {
         new CommandChecker(configuration.BotPrefix, "myid", "me"),

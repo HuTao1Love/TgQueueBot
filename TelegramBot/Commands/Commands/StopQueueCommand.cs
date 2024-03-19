@@ -9,6 +9,9 @@ namespace TelegramBot.Commands.Commands;
 
 public class StopQueueCommand(IQueueService service, IUserRepository userRepository) : ICommand
 {
+    public string? Name => null;
+    public string? Description => null;
+
     public IEnumerable<IChecker> Checkers { get; } = new IChecker[]
     {
         new CallbackDataChecker(KeyboardButton.StopKeyboardButton.StopCallback),

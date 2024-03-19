@@ -7,6 +7,9 @@ namespace TelegramBot.Commands.Commands;
 
 public class QueueListCommand(BotConfiguration configuration, IUserRepository userRepository, IQueueRepository queueRepository) : ICommand
 {
+    public string? Name => "listq";
+    public string? Description => "Watch queue list in chat";
+
     public IEnumerable<IChecker> Checkers { get; } = new IChecker[]
     {
         new CommandChecker(configuration.BotPrefix, "listq", "listqueue"),

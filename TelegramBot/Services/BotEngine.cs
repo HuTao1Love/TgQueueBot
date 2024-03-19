@@ -6,6 +6,7 @@ using TelegramBot.Commands;
 
 namespace TelegramBot.Services;
 
+#pragma warning disable SK1200
 public class BotEngine(ITelegramBotClient telegramBotClient, IEnumerable<ICommand> commands, BotContext botContext)
 {
     public async Task ListenForMessagesAsync()
@@ -15,52 +16,23 @@ public class BotEngine(ITelegramBotClient telegramBotClient, IEnumerable<IComman
         User me = await telegramBotClient.GetMeAsync();
         Console.WriteLine($"Start listening on @{me.Username}");
 
+        await telegramBotClient.SetMyCommandsAsync(commands
+            .Where(i => i.Name is not null && i.Description is not null)
+            .Select(i => new BotCommand
+            {
+                Command = i.Name!,
+                Description = i.Description!,
+            }));
+
+        IUpdateHandler updateHandler = new UpdateHandlerNotAwaitUpdatesProxy(
+            new UpdateHandlerCatchExceptionsProxy(
+                new UpdateHandler(commands)));
+
         await telegramBotClient.ReceiveAsync(
-            CreateUpdateHandler(),
+            updateHandler,
             receiverOptions: receiverOptions,
             cancellationToken: botContext.UpdateReceivingTokenSource.Token);
 
-        Console.WriteLine("Stopped listening");
-    }
-
-    private IUpdateHandler CreateUpdateHandler()
-        => new UpdateHandlerNotAwaitUpdatesProxy(
-            new UpdateHandlerCatchExceptionsProxy(
-                new DefaultUpdateHandler(HandleUpdateAsync, HandlePollingErrorAsync)));
-
-    private async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
-    {
-        ArgumentNullException.ThrowIfNull(update);
-
-        if (update.Message?.Text is { } messageText)
-        {
-            Console.WriteLine($"{messageText} at {update.Message.Chat.Id}, {update.Message.MessageId}");
-        }
-
-        if (update.CallbackQuery is { Message: not null } callbackQuery)
-        {
-            Console.WriteLine($"{callbackQuery.Data} at {callbackQuery.Message.Chat.Id}, {callbackQuery.Message.MessageId}");
-        }
-
-        var clientUpdate = new ClientUpdate(update, botClient);
-
-        foreach (ICommand command in commands)
-        {
-            if (!await command.Check(clientUpdate, cancellationToken)) continue;
-            await command.Execute(clientUpdate, cancellationToken);
-        }
-    }
-
-    private Task HandlePollingErrorAsync(ITelegramBotClient botClient, Exception exception, CancellationToken cancellationToken)
-    {
-        string errorMessage = exception switch
-        {
-            ApiRequestException apiRequestException
-                => $"Telegram API Error:\n[{apiRequestException.ErrorCode}]\n{apiRequestException.Message}",
-            _ => exception.ToString(),
-        };
-
-        Console.WriteLine(errorMessage);
-        return Task.CompletedTask;
+        Console.WriteLine($"Stopped listening on {me.Username}");
     }
 }
