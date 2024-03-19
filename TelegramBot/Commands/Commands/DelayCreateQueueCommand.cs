@@ -13,7 +13,8 @@ public class DelayCreateQueueCommand(
     BotConfiguration configuration,
     BotContext context,
     IUserRepository userRepository,
-    IQueueService queueService) : CommandBase
+    IQueueService queueService,
+    CultureInfo cultureInfo) : CommandBase
 {
     protected override IEnumerable<IChecker> Checkers { get; } = new IChecker[]
     {
@@ -50,7 +51,7 @@ public class DelayCreateQueueCommand(
             queueSize = int.Min(queueSize, configuration.MaxQueueSize);
         }
 
-        DateTime time = text[1].DateTimeFromString();
+        DateTime time = text[1].DateTimeFromString(cultureInfo);
         string name = text[isUpdatedQueueSize ? 3 : 2];
 
         if (name.Contains(configuration.BotPrefix, StringComparison.InvariantCultureIgnoreCase))
@@ -66,7 +67,7 @@ public class DelayCreateQueueCommand(
         }
 
         Message sent = await update.AnswerWithKeyboard(
-            $"Queue will be created at: {time.ToString(CultureInfo.InvariantCulture)}",
+            $"Queue will be created at: {time.ToString(cultureInfo)}",
             new KeyboardMarkup(configuration.MaxItemsPerKeyboardLine)
                 .AddItems(new KeyboardButton.CancelKeyboardButton())
                 .ToTelegramKeyboardMarkup());

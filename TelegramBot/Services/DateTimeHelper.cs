@@ -6,7 +6,7 @@ public static class DateTimeHelper
 {
     private static readonly string[] Formats = { "hh:mm", "hh:mm:ss" };
 
-    public static DateTime DateTimeFromString(this string dateTimeObject)
+    public static DateTime DateTimeFromString(this string dateTimeObject, CultureInfo cultureInfo)
     {
         if (int.TryParse(dateTimeObject, out int fromIntValue))
         {
@@ -14,20 +14,16 @@ public static class DateTimeHelper
             return DateTime.Now.AddSeconds(fromIntValue);
         }
 
-        if (TimeOnly.TryParseExact(
+        if (!TimeOnly.TryParseExact(
                 dateTimeObject,
                 Formats,
-                CultureInfo.InvariantCulture,
+                cultureInfo,
                 DateTimeStyles.None,
-                out TimeOnly fromTimeOnlyValue))
-        {
-            var value = new DateTime(DateOnly.FromDateTime(DateTime.Now), fromTimeOnlyValue);
+                out TimeOnly fromTimeOnlyValue)) throw new ArgumentException("Invalid format of DateTime");
 
-            if (value < DateTime.Now) value = value.AddDays(1);
+        var value = new DateTime(DateOnly.FromDateTime(DateTime.Now), fromTimeOnlyValue);
+        if (value < DateTime.Now) value = value.AddDays(1);
 
-            return value;
-        }
-
-        throw new ArgumentException("Invalid format of DateTime");
+        return value;
     }
 }

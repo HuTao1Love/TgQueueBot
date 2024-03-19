@@ -1,4 +1,5 @@
-﻿using Application.Extensions;
+﻿using System.Globalization;
+using Application.Extensions;
 using Contracts;
 using Database.Extensions;
 using Microsoft.Extensions.Configuration;
@@ -19,7 +20,8 @@ collection
     .AddApplication()
     .LoadDatabase(botConfig)
     .LoadTelegramBot(botConfig)
-    .AddScoped<BotConfiguration>(_ => botConfig);
+    .AddScoped<BotConfiguration>(_ => botConfig)
+    .AddScoped<CultureInfo>(_ => CultureInfo.CurrentCulture);
 
 ServiceProvider provider = collection.BuildServiceProvider();
 using IServiceScope scope = provider.CreateScope();
