@@ -75,14 +75,14 @@ public class DelayCreateQueueCommand(
                 .AddItems(new KeyboardButton.CancelKeyboardButton())
                 .ToTelegramKeyboardMarkup());
 
-        await sent.PinMessageAsync(update.TelegramBotClient, token: token);
-        var id = new MessageIdentifier(sent.Chat.Id, sent.MessageId);
+        await sent.SafePinMessageAsync(update.TelegramBotClient, token: token);
+        var id = sent.ToMessageIdentifier();
 
         CancellationTokenSource cts = context.CancellationTokenDictionary.GetOrAdd(
                 id,
                 new CancellationTokenSource());
         await Task.Delay(time - DateTime.Now, cts.Token);
-        await sent.UnpinMessageAsync(update.TelegramBotClient, cts.Token);
+        await sent.SafeUnpinMessageAsync(update.TelegramBotClient, cts.Token);
         await CreateQueueCommand.CreateQueue(
             update,
             queueService,

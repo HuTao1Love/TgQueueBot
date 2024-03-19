@@ -27,7 +27,7 @@ public class CreateQueueCommand(BotConfiguration configuration, IUserRepository 
         ArgumentNullException.ThrowIfNull(sent);
 
         Queue queue = await service.CreateQueue(sent.Chat.Id, sent.MessageId, name, size);
-        await sent.PinMessageAsync(update.TelegramBotClient, token: token);
+        await sent.SafePinMessageAsync(update.TelegramBotClient, token: token);
         await update.TelegramBotClient.EditTextAsync(
             sent.Chat.Id,
             sent.MessageId,

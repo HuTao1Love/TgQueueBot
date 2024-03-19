@@ -28,6 +28,7 @@ public class ShutdownCommand(BotConfiguration configuration, BotContext context)
 
         foreach (KeyValuePair<MessageIdentifier, CancellationTokenSource> dTokenSource in context.CancellationTokenDictionary)
         {
+            await dTokenSource.Key.SafeUnpinMessageAsync(client, token);
             await client.EditTextAsync(
                 dTokenSource.Key.ChatId,
                 dTokenSource.Key.MessageId,

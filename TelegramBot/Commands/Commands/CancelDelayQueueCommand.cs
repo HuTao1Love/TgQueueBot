@@ -22,8 +22,9 @@ public class CancelDelayQueueCommand(BotContext context, IUserRepository userRep
         if (update.CallbackQuery?.Message is not { } message) return;
 
         await message.EditTextAsync(update.TelegramBotClient, "Queue creation stopped", null, token);
+        await message.SafeUnpinMessageAsync(update.TelegramBotClient, token);
         if (context.CancellationTokenDictionary.TryGetValue(
-                new MessageIdentifier(message.Chat.Id, message.MessageId),
+                message.ToMessageIdentifier(),
                 out CancellationTokenSource? cts))
         {
             await cts.CancelAsync();

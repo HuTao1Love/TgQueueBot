@@ -27,6 +27,7 @@ public class StopQueueCommand(IQueueService service, IUserRepository userReposit
 
         Queue? queue = await service.DeleteQueue(message.Chat.Id, message.MessageId);
 
+        await message.SafeUnpinMessageAsync(update.TelegramBotClient, token);
         await update.TelegramBotClient.EditTextAsync(
             message.Chat.Id,
             message.MessageId,

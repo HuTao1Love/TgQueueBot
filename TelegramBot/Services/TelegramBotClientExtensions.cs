@@ -43,7 +43,7 @@ public static class TelegramBotClientExtensions
         return await client.EditTextAsync(message.Chat.Id, message.MessageId, text, markup, token);
     }
 
-    public static async Task PinMessageAsync(
+    public static async Task SafePinMessageAsync(
         this Message message,
         ITelegramBotClient client,
         bool disableNotification = false,
@@ -60,8 +60,8 @@ public static class TelegramBotClientExtensions
         }
     }
 
-    public static async Task UnpinMessageAsync(
-        this Message message,
+    public static async Task SafeUnpinMessageAsync(
+        this MessageIdentifier message,
         ITelegramBotClient client,
         CancellationToken token = default)
     {
@@ -69,11 +69,23 @@ public static class TelegramBotClientExtensions
 
         try
         {
-            await client.UnpinChatMessageAsync(message.Chat.Id, message.MessageId, token);
+            await client.UnpinChatMessageAsync(message.ChatId, (int)message.MessageId, token);
         }
         catch (ApiRequestException)
         {
         }
+    }
+
+    public static async Task SafeUnpinMessageAsync(
+        this Message message,
+        ITelegramBotClient client,
+        CancellationToken token = default)
+        => await SafeUnpinMessageAsync(message.ToMessageIdentifier(), client, token);
+
+    public static MessageIdentifier ToMessageIdentifier(this Message message)
+    {
+        ArgumentNullException.ThrowIfNull(message);
+        return new MessageIdentifier(message.Chat.Id, message.MessageId);
     }
 
     private static IEnumerable<InlineKeyboardButton> ToInlineKeyboardButtons(this IEnumerable<KeyboardButton> buttons)
