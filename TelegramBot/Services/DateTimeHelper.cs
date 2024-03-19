@@ -8,6 +8,8 @@ public static class DateTimeHelper
 
     public static DateTime DateTimeFromString(this string dateTimeObject, CultureInfo cultureInfo)
     {
+        Console.WriteLine(cultureInfo);
+
         if (int.TryParse(dateTimeObject, out int fromIntValue))
         {
             if (fromIntValue <= 0) throw new ArgumentException("DateTime must be positive");

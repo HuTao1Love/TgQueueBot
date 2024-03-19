@@ -21,7 +21,7 @@ collection
     .LoadDatabase(botConfig)
     .LoadTelegramBot(botConfig)
     .AddScoped<BotConfiguration>(_ => botConfig)
-    .AddScoped<CultureInfo>(_ => new CultureInfo("ru-Ru"));
+    .AddScoped<CultureInfo>(_ => new CultureInfo("ru-RU"));
 
 ServiceProvider provider = collection.BuildServiceProvider();
 using IServiceScope scope = provider.CreateScope();
