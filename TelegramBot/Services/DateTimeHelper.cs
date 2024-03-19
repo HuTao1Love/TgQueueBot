@@ -4,12 +4,9 @@ namespace TelegramBot.Services;
 
 public static class DateTimeHelper
 {
-    private static readonly string[] Formats = { "hh:mm", "hh:mm:ss" };
+    private static readonly string[] Formats = { "HH:mm", "HH:mm:ss" };
 
-    public static DateTime DateTimeFromString(this string dateTimeObject)
-        => DateTimeFromString(dateTimeObject, null);
-
-    public static DateTime DateTimeFromString(this string dateTimeObject, CultureInfo? cultureInfo)
+    public static DateTime DateTimeFromString(this string dateTimeObject, CultureInfo? cultureInfo = null)
     {
         if (int.TryParse(dateTimeObject, out int fromIntValue))
         {
