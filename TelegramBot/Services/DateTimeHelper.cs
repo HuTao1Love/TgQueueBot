@@ -4,12 +4,10 @@ namespace TelegramBot.Services;
 
 public static class DateTimeHelper
 {
-    private static readonly string[] Formats = { "hh:mm", "hh:mm:ss" };
+    private static readonly string[] Formats = { "HH:MM", "HH:MM:SS" };
 
-    public static DateTime DateTimeFromString(this string dateTimeObject, CultureInfo cultureInfo)
+    public static DateTime DateTimeFromString(this string dateTimeObject)
     {
-        Console.WriteLine(cultureInfo);
-
         if (int.TryParse(dateTimeObject, out int fromIntValue))
         {
             if (fromIntValue <= 0) throw new ArgumentException("DateTime must be positive");
@@ -19,7 +17,7 @@ public static class DateTimeHelper
         if (!TimeOnly.TryParseExact(
                 dateTimeObject,
                 Formats,
-                cultureInfo,
+                CultureInfo.InvariantCulture,
                 DateTimeStyles.None,
                 out TimeOnly fromTimeOnlyValue)) throw new ArgumentException("Invalid format of time");
 
