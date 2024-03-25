@@ -1,8 +1,9 @@
 # Telegram queue bot
-Bot designed for ease of use and management in queues. 
 It allows users to create and manage queues easily (both current and deferred), with easy access to any desired potsition. 
+
 This bot is used by specific groups at ITMO.
-For example, create an ordered list of students submitting laboratory work to the teacher.
+
+Example usage: creation queues for labworks at ITMO for submitting laboratory work to the teacher.
 
 # Examples:
 ## Queue:
