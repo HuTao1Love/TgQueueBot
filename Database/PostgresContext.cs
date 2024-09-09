@@ -28,22 +28,24 @@ namespace Database;
 #pragma warning disable SA1601
 #pragma warning disable CA1062
 #pragma warning disable SK1200
-public partial class PostgresContext : DbContext
+public sealed partial class PostgresContext : DbContext
 {
     public PostgresContext()
     {
+        Database.EnsureCreated();
     }
 
     public PostgresContext(DbContextOptions<PostgresContext> options)
         : base(options)
     {
+        Database.EnsureCreated();
     }
 
-    public virtual DbSet<QueueData> Queues { get; set; } = null!;
+    public DbSet<QueueData> Queues { get; set; } = null!;
 
-    public virtual DbSet<UserData> Users { get; set; } = null!;
+    public DbSet<UserData> Users { get; set; } = null!;
 
-    public virtual DbSet<UsersQueueData> UsersQueues { get; set; } = null!;
+    public DbSet<UsersQueueData> UsersQueues { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
