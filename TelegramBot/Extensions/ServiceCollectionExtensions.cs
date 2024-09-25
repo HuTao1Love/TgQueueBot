@@ -20,7 +20,7 @@ public static class ServiceCollectionExtensions
             .ForEach(t => collection.AddScoped(baseType, t));
 
         return collection
-            .AddScoped<ITelegramBotClient>(x => new TelegramBotClient(configuration.ApiToken))
+            .AddScoped<ITelegramBotClient>(_ => new TelegramBotClient(configuration.ApiToken))
             .AddScoped<BotEngine>()
             .AddSingleton<BotContext>();
     }

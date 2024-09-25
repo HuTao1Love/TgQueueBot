@@ -1,5 +1,4 @@
 using Contracts;
-using Contracts.Repositories;
 using Contracts.Services;
 using Models;
 using Telegram.Bot.Types;
@@ -10,7 +9,7 @@ namespace TelegramBot.Commands;
 
 [NewMessage("/createq", "/createqueue", "/startq", "/startqueue", Name = "createq", Description = "Create new queue")]
 [UserIsAdminRule("You are not admin")]
-public class CreateQueueCommand(BotConfiguration configuration, IUserRepository userRepository, IQueueService queueService) : ICommand
+public class CreateQueueCommand(BotConfiguration configuration, IQueueService queueService) : ICommand
 {
     public static async Task CreateQueue(ClientUpdate update, IQueueService service, Message sent, string name, int size, int maxItemsPerKeyboardLine, CancellationToken token)
     {

@@ -12,7 +12,7 @@ public class BotEngine(ITelegramBotClient telegramBotClient, IEnumerable<IComman
     private IReadOnlyCollection<ICommand> _commands = commands.ToList();
     public async Task ListenForMessagesAsync()
     {
-        var receiverOptions = new ReceiverOptions { AllowedUpdates = { }, }; // receive all update types
+        var receiverOptions = new ReceiverOptions(); // receive all update types
 
         User me = await telegramBotClient.GetMeAsync();
         Console.WriteLine($"Start listening on @{me.Username}");

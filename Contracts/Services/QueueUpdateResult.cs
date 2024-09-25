@@ -22,10 +22,7 @@ public abstract record QueueUpdateResult
         : QueueUpdateResult(Queue, true, "Успешно отписался{ась}!");
 
     public sealed record SuccessfulEnterResult(Queue Queue, int Position)
-        : QueueUpdateResult(Queue, true, $"Успешная запись на место {Position}!")
-    {
-        public int Position { get; init; } = Position;
-    }
+        : QueueUpdateResult(Queue, true, $"Успешная запись на место {Position}!");
 
     public sealed record AlreadyInQueueResult(Queue Queue)
         : QueueUpdateResult(Queue, false, "Вы уже в очереди");

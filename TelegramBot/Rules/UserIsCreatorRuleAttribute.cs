@@ -17,7 +17,7 @@ public sealed class UserIsCreatorRuleAttribute(string? answerIfNotCreator = null
         ArgumentNullException.ThrowIfNull(update);
 
         long? tgId = update.Message?.From?.Id;
-        long? chatId = update.Message?.Chat?.Id;
+        long? chatId = update.Message?.Chat.Id;
 
         if (tgId == _configuration.BotCreator)
         {

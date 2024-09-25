@@ -23,7 +23,7 @@ public class StopQueueCommand(IQueueService service) : ICommand
         await update.TelegramBotClient.EditTextAsync(
             message.Chat.Id,
             message.MessageId,
-            "Stopped.\n" + queue ?? string.Empty,
+            "Stopped.\n" + queue,
             null,
             token);
     }

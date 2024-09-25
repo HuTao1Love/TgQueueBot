@@ -1,4 +1,3 @@
-using Contracts.Repositories;
 using Models;
 using TelegramBot.Rules;
 using TelegramBot.Services;
@@ -7,7 +6,7 @@ namespace TelegramBot.Commands;
 
 [CallbackData(KeyboardButton.CancelKeyboardButton.CancelCallback)]
 [UserIsAdminRule("You must be an admin to do this")]
-public class CancelDelayQueueCommand(BotContext context, IUserRepository userRepository) : ICommand
+public class CancelDelayQueueCommand(BotContext context) : ICommand
 {
     public async Task Execute(ClientUpdate update, CancellationToken token)
     {

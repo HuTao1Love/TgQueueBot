@@ -1,6 +1,5 @@
 using System.Globalization;
 using Contracts;
-using Contracts.Repositories;
 using Contracts.Services;
 using Models;
 using Telegram.Bot.Types;
@@ -14,7 +13,6 @@ namespace TelegramBot.Commands;
 public class DelayCreateQueueCommand(
     BotConfiguration configuration,
     BotContext context,
-    IUserRepository userRepository,
     IQueueService queueService,
     CultureInfo cultureInfo) : ICommand
 {
@@ -49,7 +47,7 @@ public class DelayCreateQueueCommand(
         DateTime time = text[1].DateTimeFromString(cultureInfo);
         string name = text[isUpdatedQueueSize ? 3 : 2];
 
-        if (name.Contains("/", StringComparison.InvariantCultureIgnoreCase))
+        if (name.Contains('/', StringComparison.InvariantCultureIgnoreCase))
         {
             await update.AnswerText($"Do not use / in queue name");
             return;

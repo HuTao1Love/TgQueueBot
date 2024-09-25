@@ -22,6 +22,9 @@ public class User(long userId, long tgId, string name, bool isAdmin)
 
     public override int GetHashCode()
     {
+        // ReSharper disable NonReadonlyMemberInGetHashCode
         return HashCode.Combine(UserId, TgId);
+
+        // ReSharper restore NonReadonlyMemberInGetHashCode
     }
 }

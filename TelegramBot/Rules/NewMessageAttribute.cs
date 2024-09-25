@@ -7,7 +7,7 @@ public sealed class NewMessageAttribute(params string[] commands) : RuleAttribut
 
     public override Task<bool> Check(ClientUpdate update, CancellationToken token)
     {
-        string? text = update?.Message?.Text;
+        string? text = update.Message?.Text;
 
         return Task.FromResult(text is not null && commands.Any(i => text.StartsWith(i, StringComparison.InvariantCultureIgnoreCase)));
     }

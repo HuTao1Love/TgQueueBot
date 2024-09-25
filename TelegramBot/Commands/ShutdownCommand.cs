@@ -1,4 +1,3 @@
-using Contracts;
 using Telegram.Bot;
 using TelegramBot.Rules;
 using TelegramBot.Services;
@@ -7,7 +6,7 @@ namespace TelegramBot.Commands;
 
 [NewMessage("/shutdown", Name = "shutdown", Description = "Shutdown bot")]
 [UserIsCreatorRule("Only for Hu Tao")]
-public class ShutdownCommand(BotConfiguration configuration, BotContext context) : ICommand
+public class ShutdownCommand(BotContext context) : ICommand
 {
     public async Task Execute(ClientUpdate update, CancellationToken token)
     {

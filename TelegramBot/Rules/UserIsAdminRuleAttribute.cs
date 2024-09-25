@@ -38,7 +38,7 @@ public sealed class UserIsAdminRuleAttribute(string? answerIfNotAdmin = null) : 
             username = null;
         }
 
-        long? chatId = update.Message?.Chat?.Id;
+        long? chatId = update.Message?.Chat.Id;
         if (tgId is null || username is null) return false;
 
         User user = await _userRepository.FindOrCreate(tgId.Value, username);

@@ -1,4 +1,3 @@
-using Contracts;
 using Contracts.Repositories;
 using Telegram.Bot.Types;
 using TelegramBot.Rules;
@@ -8,7 +7,7 @@ namespace TelegramBot.Commands;
 
 [NewMessage("/admin", "/setadmin", Name = "admin", Description = "Set admin (need reply to user's message)")]
 [UserIsCreatorRule("Only for Hu Tao")]
-public class SetAdminCommand(BotConfiguration configuration, IUserRepository userRepository) : ICommand
+public class SetAdminCommand(IUserRepository userRepository) : ICommand
 {
     public async Task Execute(ClientUpdate update, CancellationToken token)
     {

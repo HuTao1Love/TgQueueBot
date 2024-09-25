@@ -13,7 +13,7 @@ public class MyIdCommand(IUserRepository userRepository) : ICommand
         ArgumentNullException.ThrowIfNull(update);
 
         long? tgId = update.Message?.From?.Id;
-        long? chatId = update.Message?.Chat?.Id;
+        long? chatId = update.Message?.Chat.Id;
         string? username = update.Message?.From?.Username;
 
         if (tgId is null || chatId is null || username is null) return;

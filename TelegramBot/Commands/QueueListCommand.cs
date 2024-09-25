@@ -1,4 +1,3 @@
-using Contracts;
 using Contracts.Repositories;
 using Telegram.Bot.Types;
 using TelegramBot.Rules;
@@ -7,7 +6,7 @@ namespace TelegramBot.Commands;
 
 [NewMessage("/listq", "/listqueue", Name = "listq", Description = "Watch queue list in chat")]
 [UserIsAdminRule("You are not an admin")]
-public class QueueListCommand(BotConfiguration configuration, IUserRepository userRepository, IQueueRepository queueRepository) : ICommand
+public class QueueListCommand(IQueueRepository queueRepository) : ICommand
 {
     public async Task Execute(ClientUpdate update, CancellationToken token)
     {

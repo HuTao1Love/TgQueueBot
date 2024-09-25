@@ -10,14 +10,14 @@ namespace TelegramBot.Services;
 
 public class UpdateHandler : IUpdateHandler
 {
-    private IReadOnlyCollection<ICommand> _commands;
+    private readonly IReadOnlyCollection<ICommand> _commands;
 
     public UpdateHandler(IServiceProvider provider, IEnumerable<ICommand> commands)
     {
         _commands = commands.ToList();
-        foreach (RuleAttribute command in _commands.SelectMany(c => c.GetType().GetCustomAttributes<RuleAttribute>()))
+        foreach (RuleAttribute rule in _commands.SelectMany(c => c.GetType().GetCustomAttributes<RuleAttribute>()))
         {
-            command.Initialize(provider);
+            rule.Initialize(provider);
         }
     }
 
