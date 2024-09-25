@@ -7,7 +7,7 @@ using TelegramBot.Rules;
 
 namespace TelegramBot.Services;
 
-public class BotEngine(ITelegramBotClient telegramBotClient, IEnumerable<ICommand> commands, BotContext botContext)
+public class BotEngine(ITelegramBotClient telegramBotClient, IEnumerable<ICommand> commands, BotContext botContext, IServiceProvider provider)
 {
     private IReadOnlyCollection<ICommand> _commands = commands.ToList();
     public async Task ListenForMessagesAsync()
@@ -26,7 +26,7 @@ public class BotEngine(ITelegramBotClient telegramBotClient, IEnumerable<IComman
 
         IUpdateHandler updateHandler = new UpdateHandlerNotAwaitUpdatesProxy(
             new UpdateHandlerCatchExceptionsProxy(
-                new UpdateHandler(_commands)));
+                new UpdateHandler(provider, _commands)));
 
         await telegramBotClient.ReceiveAsync(
             updateHandler,
