@@ -15,7 +15,8 @@ public class UpdateHandler : IUpdateHandler
     public UpdateHandler(IServiceProvider provider, IEnumerable<ICommand> commands)
     {
         _commands = commands.ToList();
-        foreach (RuleAttribute rule in _commands.SelectMany(c => c.GetType().GetCustomAttributes<RuleAttribute>()))
+
+        foreach (RuleAttribute rule in _commands.SelectMany(c => c.GetType().GetCustomAttributes<RuleAttribute>(true)))
         {
             rule.Initialize(provider);
         }
