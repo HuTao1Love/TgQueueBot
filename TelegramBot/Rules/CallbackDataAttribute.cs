@@ -1,6 +1,6 @@
 namespace TelegramBot.Rules;
 
-public sealed class CallbackDataAttribute(params string[] dataStartWith) : RuleAttribute
+public sealed class CallbackDataAttribute(params string[] dataStartWith) : MainRuleAttribute
 {
     public override Task<bool> Check(ClientUpdate update, CancellationToken token)
     {

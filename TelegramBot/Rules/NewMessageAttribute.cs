@@ -1,6 +1,6 @@
 namespace TelegramBot.Rules;
 
-public sealed class NewMessageAttribute(params string[] commands) : RuleAttribute
+public sealed class NewMessageAttribute(params string[] commands) : MainRuleAttribute
 {
     public string? Name { get; set; }
     public string? Description { get; set; }

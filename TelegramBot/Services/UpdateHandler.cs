@@ -11,7 +11,6 @@ namespace TelegramBot.Services;
 public class UpdateHandler(IServiceProvider provider, IEnumerable<ICommand> commands) : IUpdateHandler
 {
     private readonly IReadOnlyCollection<ICommand> _commands = commands.ToList();
-    private readonly IServiceProvider _provider = provider;
 
     public async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
@@ -30,26 +29,32 @@ public class UpdateHandler(IServiceProvider provider, IEnumerable<ICommand> comm
         var clientUpdate = new ClientUpdate(update, botClient);
 
         ICommand? command = (await Task.WhenAll(_commands
-            .Select(c => new
-            {
-                Command = c,
-                Rules = c.GetType().GetCustomAttributes<RuleAttribute>(true),
-            })
-            .Select(async c =>
-            {
-                foreach (RuleAttribute? rule in c.Rules)
+                .Select(c => new
                 {
-                    rule?.Initialize(_provider);
-                }
+                    Command = c,
+                    MainRule = c.GetType().GetCustomAttribute<MainRuleAttribute>() ??
+                               throw new ArgumentException("Provide main rule"),
+                    Rules = c.GetType().GetCustomAttributes<RuleAttribute>(true),
+                })
+                .Select(async c =>
+                {
+                    c.MainRule.Initialize(provider);
 
-                return new
-                {
-                    c.Command,
-                    CheckResult = await Task.WhenAll(c.Rules.Select(a => a.Check(clientUpdate, cancellationToken))),
-                };
-            })))
-            .FirstOrDefault(c => c.CheckResult.All(i => i))?
-            .Command;
+                    if (!await c.MainRule.Check(clientUpdate, cancellationToken))
+                    {
+                        return null;
+                    }
+
+                    foreach (RuleAttribute? rule in c.Rules)
+                    {
+                        rule.Initialize(provider);
+                    }
+
+                    bool[] result = await Task.WhenAll(c.Rules.Select(a => a.Check(clientUpdate, cancellationToken)));
+
+                    return !result.All(i => i) ? null : c.Command;
+                })))
+            .FirstOrDefault(i => i is not null);
 
         if (command is not null)
         {
