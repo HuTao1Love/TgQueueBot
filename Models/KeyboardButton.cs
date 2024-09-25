@@ -4,26 +4,31 @@ public abstract record KeyboardButton(string Text, string Callback)
 {
     public record UserKeyboardButton : KeyboardButton
     {
+        public const string CallbackPrefix = "index-";
+
         public UserKeyboardButton(int index, string emoji)
             : base(Text: $"{index + 1}{emoji}", Callback: $"{CallbackPrefix}{index}")
         {
         }
+    }
 
-        public static string CallbackPrefix => "index-";
+    public sealed record SkipMeKeyboardButton() : KeyboardButton("SkipMe", SkipMeCallback)
+    {
+        public const string SkipMeCallback = "skipme";
     }
 
     public sealed record ResetKeyboardButton() : KeyboardButton("Reset", ResetCallback)
     {
-        public static string ResetCallback => "reset";
+        public const string ResetCallback = "reset";
     }
 
     public sealed record StopKeyboardButton() : KeyboardButton("Stop", StopCallback)
     {
-        public static string StopCallback => "stop";
+        public const string StopCallback = "stop";
     }
 
     public sealed record CancelKeyboardButton() : KeyboardButton("Cancel", CancelCallback)
     {
-        public static string CancelCallback => "cancel";
+        public const string CancelCallback = "cancel";
     }
 }

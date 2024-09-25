@@ -1,21 +1,14 @@
 using Contracts.Repositories;
 using Models;
-using TelegramBot.Commands.Checkers;
+using TelegramBot.Rules;
 using TelegramBot.Services;
 
-namespace TelegramBot.Commands.Commands;
+namespace TelegramBot.Commands;
 
+[CallbackData(KeyboardButton.CancelKeyboardButton.CancelCallback)]
+[UserIsAdminRule("You must be an admin to do this")]
 public class CancelDelayQueueCommand(BotContext context, IUserRepository userRepository) : ICommand
 {
-    public string? Name => null;
-    public string? Description => null;
-
-    public IEnumerable<IChecker> Checkers { get; } = new IChecker[]
-    {
-        new CallbackDataChecker(KeyboardButton.CancelKeyboardButton.CancelCallback),
-        new UserIsAdminChecker(userRepository, "You must be an admin to do this"),
-    };
-
     public async Task Execute(ClientUpdate update, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(update);

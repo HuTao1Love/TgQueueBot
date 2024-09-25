@@ -1,21 +1,14 @@
 using Contracts;
 using Contracts.Repositories;
 using Telegram.Bot.Types;
-using TelegramBot.Commands.Checkers;
+using TelegramBot.Rules;
 
-namespace TelegramBot.Commands.Commands;
+namespace TelegramBot.Commands;
 
+[NewMessage("/listq", "/listqueue", Name = "listq", Description = "Watch queue list in chat")]
+[UserIsAdminRule("You are not an admin")]
 public class QueueListCommand(BotConfiguration configuration, IUserRepository userRepository, IQueueRepository queueRepository) : ICommand
 {
-    public string? Name => "listq";
-    public string? Description => "Watch queue list in chat";
-
-    public IEnumerable<IChecker> Checkers { get; } = new IChecker[]
-    {
-        new CommandChecker(configuration.BotPrefix, "listq", "listqueue"),
-        new UserIsAdminChecker(userRepository, "You are not an admin"),
-    };
-
     public async Task Execute(ClientUpdate update, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(update);

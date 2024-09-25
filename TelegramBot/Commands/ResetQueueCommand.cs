@@ -1,24 +1,16 @@
 using Contracts;
-using Contracts.Repositories;
 using Contracts.Services;
 using Models;
 using Telegram.Bot.Types;
-using TelegramBot.Commands.Checkers;
+using TelegramBot.Rules;
 using TelegramBot.Services;
 
-namespace TelegramBot.Commands.Commands;
+namespace TelegramBot.Commands;
 
-public class ResetQueueCommand(BotConfiguration configuration, IQueueService service, IUserRepository userRepository) : ICommand
+[CallbackData(KeyboardButton.ResetKeyboardButton.ResetCallback)]
+[UserIsAdminRule("You are not an admin")]
+public class ResetQueueCommand(BotConfiguration configuration, IQueueService service) : ICommand
 {
-    public string? Name => null;
-    public string? Description => null;
-
-    public IEnumerable<IChecker> Checkers { get; } = new IChecker[]
-    {
-        new CallbackDataChecker(KeyboardButton.ResetKeyboardButton.ResetCallback),
-        new UserIsAdminChecker(userRepository, "You are not an admin"),
-    };
-
     public async Task Execute(ClientUpdate update, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(update);

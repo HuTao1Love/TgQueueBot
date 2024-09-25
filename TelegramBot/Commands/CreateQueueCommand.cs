@@ -2,24 +2,16 @@ using Contracts;
 using Contracts.Repositories;
 using Contracts.Services;
 using Models;
-using Telegram.Bot;
 using Telegram.Bot.Types;
-using TelegramBot.Commands.Checkers;
+using TelegramBot.Rules;
 using TelegramBot.Services;
 
-namespace TelegramBot.Commands.Commands;
+namespace TelegramBot.Commands;
 
+[NewMessage("/createq", "/createqueue", "/startq", "/startqueue", Name = "createq", Description = "Create new queue")]
+[UserIsAdminRule("You are not admin")]
 public class CreateQueueCommand(BotConfiguration configuration, IUserRepository userRepository, IQueueService queueService) : ICommand
 {
-    public string? Name => "createq";
-    public string? Description => "Create new queue";
-
-    public IEnumerable<IChecker> Checkers { get; } = new IChecker[]
-    {
-        new CommandChecker(configuration.BotPrefix, "createq", "createqueue", "startq", "startqueue"),
-        new UserIsAdminChecker(userRepository, "You are not admin"),
-    };
-
     public static async Task CreateQueue(ClientUpdate update, IQueueService service, Message sent, string name, int size, int maxItemsPerKeyboardLine, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(update);
@@ -43,8 +35,7 @@ public class CreateQueueCommand(BotConfiguration configuration, IUserRepository 
         Message? message = update.Message;
         if (message is null) return;
 
-        var text = string.Concat(message.Text ?? string.Empty
-                .Skip(configuration.BotPrefix.Length))
+        var text = string.Concat(message.Text ?? string.Empty)
             .Split(' ', StringSplitOptions.TrimEntries)
             .ToList();
 
@@ -66,9 +57,9 @@ public class CreateQueueCommand(BotConfiguration configuration, IUserRepository 
 
         string name = text[isUpdatedQueueSize ? 2 : 1];
 
-        if (name.Contains(configuration.BotPrefix, StringComparison.InvariantCultureIgnoreCase))
+        if (name.Contains('/', StringComparison.InvariantCultureIgnoreCase))
         {
-            await update.AnswerText($"Do not use {configuration.BotPrefix} in queue name");
+            await update.AnswerText($"Do not use / in queue name");
             return;
         }
 

@@ -1,21 +1,14 @@
 using Contracts;
 using Telegram.Bot;
-using TelegramBot.Commands.Checkers;
+using TelegramBot.Rules;
 using TelegramBot.Services;
 
-namespace TelegramBot.Commands.Commands;
+namespace TelegramBot.Commands;
 
+[NewMessage("/shutdown", Name = "shutdown", Description = "Shutdown bot")]
+[UserIsCreatorRule("Only for Hu Tao")]
 public class ShutdownCommand(BotConfiguration configuration, BotContext context) : ICommand
 {
-    public string? Name => "shutdown";
-    public string? Description => "Shutdown bot";
-
-    public IEnumerable<IChecker> Checkers { get; } = new IChecker[]
-    {
-        new CommandChecker(configuration.BotPrefix, "shutdown"),
-        new UserIsCreatorChecker(configuration, "Only for Hu Tao"),
-    };
-
     public async Task Execute(ClientUpdate update, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(update);

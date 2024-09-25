@@ -1,13 +1,15 @@
+using System.Reflection;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using TelegramBot.Commands;
+using TelegramBot.Rules;
 
 namespace TelegramBot.Services;
 
 #pragma warning disable SK1200
-public class BotEngine(ITelegramBotClient telegramBotClient, IEnumerable<ICommand> commands, BotContext botContext)
+public class BotEngine(ITelegramBotClient telegramBotClient, IReadOnlyCollection<ICommand> commands, BotContext botContext)
 {
     public async Task ListenForMessagesAsync()
     {
@@ -16,13 +18,12 @@ public class BotEngine(ITelegramBotClient telegramBotClient, IEnumerable<IComman
         User me = await telegramBotClient.GetMeAsync();
         Console.WriteLine($"Start listening on @{me.Username}");
 
-        await telegramBotClient.SetMyCommandsAsync(commands
-            .Where(i => i.Name is not null && i.Description is not null)
-            .Select(i => new BotCommand
-            {
-                Command = i.Name!,
-                Description = i.Description!,
-            }));
+        IEnumerable<BotCommand> newMessages = commands
+            .Select(c => c.GetType().GetCustomAttribute<NewMessageAttribute>())
+            .Where(i => i is not null && i.Name is not null && i.Description is not null)
+            .Select(i => new BotCommand { Command = i!.Name!, Description = i.Description! });
+
+        await telegramBotClient.SetMyCommandsAsync(newMessages);
 
         IUpdateHandler updateHandler = new UpdateHandlerNotAwaitUpdatesProxy(
             new UpdateHandlerCatchExceptionsProxy(

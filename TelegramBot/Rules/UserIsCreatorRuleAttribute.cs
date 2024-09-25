@@ -1,18 +1,25 @@
 using Contracts;
+using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot;
 
-namespace TelegramBot.Commands.Checkers;
+namespace TelegramBot.Rules;
 
-public class UserIsCreatorChecker(BotConfiguration configuration, string? answerIfNotCreator = null) : IChecker
+public sealed class UserIsCreatorRuleAttribute(string? answerIfNotCreator = null) : RuleAttribute
 {
-    public async Task<bool> Check(ClientUpdate update, CancellationToken token)
+    private BotConfiguration _configuration = null!;
+    public override void Initialize(IServiceProvider provider)
+    {
+        _configuration = provider.GetRequiredService<BotConfiguration>();
+    }
+
+    public override async Task<bool> Check(ClientUpdate update, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(update);
 
         long? tgId = update.Message?.From?.Id;
         long? chatId = update.Message?.Chat?.Id;
 
-        if (tgId == configuration.BotCreator)
+        if (tgId == _configuration.BotCreator)
         {
             return true;
         }

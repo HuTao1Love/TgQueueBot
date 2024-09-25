@@ -1,21 +1,13 @@
-using Contracts;
 using Contracts.Repositories;
 using Telegram.Bot.Types.Enums;
-using TelegramBot.Commands.Checkers;
+using TelegramBot.Rules;
 using User = Models.User;
 
-namespace TelegramBot.Commands.Commands;
+namespace TelegramBot.Commands;
 
-public class MyIdCommand(BotConfiguration configuration, IUserRepository userRepository) : ICommand
+[NewMessage("/myid", "/me", Name = "me", Description = "Watch my id and chat id")]
+public class MyIdCommand(IUserRepository userRepository) : ICommand
 {
-    public string? Name => "me";
-    public string? Description => "Watch my id and chat id";
-
-    public IEnumerable<IChecker> Checkers { get; } = new[]
-    {
-        new CommandChecker(configuration.BotPrefix, "myid", "me"),
-    };
-
     public async Task Execute(ClientUpdate update, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(update);

@@ -1,13 +1,21 @@
 using Contracts.Repositories;
+using Microsoft.Extensions.DependencyInjection;
 using Telegram.Bot;
 using TelegramBot.Exceptions;
 using User = Models.User;
 
-namespace TelegramBot.Commands.Checkers;
+namespace TelegramBot.Rules;
 
-public class UserIsAdminChecker(IUserRepository userRepository, string? answerIfNotAdmin = null) : IChecker
+public sealed class UserIsAdminRuleAttribute(string? answerIfNotAdmin = null) : RuleAttribute
 {
-    public async Task<bool> Check(ClientUpdate update, CancellationToken token)
+    private IUserRepository _userRepository = null!;
+
+    public override void Initialize(IServiceProvider provider)
+    {
+        _userRepository = provider.GetRequiredService<IUserRepository>();
+    }
+
+    public override async Task<bool> Check(ClientUpdate update, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(update);
 
@@ -33,7 +41,7 @@ public class UserIsAdminChecker(IUserRepository userRepository, string? answerIf
         long? chatId = update.Message?.Chat?.Id;
         if (tgId is null || username is null) return false;
 
-        User user = await userRepository.FindOrCreate(tgId.Value, username);
+        User user = await _userRepository.FindOrCreate(tgId.Value, username);
         if (user.IsAdmin) return true;
 
         if (answerIfNotAdmin is null || chatId is null) return false;

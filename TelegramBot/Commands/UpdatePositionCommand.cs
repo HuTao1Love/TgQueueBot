@@ -4,23 +4,16 @@ using Contracts.Repositories;
 using Contracts.Services;
 using Models;
 using Telegram.Bot.Types;
-using TelegramBot.Commands.Checkers;
 using TelegramBot.Exceptions;
+using TelegramBot.Rules;
 using TelegramBot.Services;
 using User = Models.User;
 
-namespace TelegramBot.Commands.Commands;
+namespace TelegramBot.Commands;
 
+[CallbackData(KeyboardButton.UserKeyboardButton.CallbackPrefix)]
 public class UpdatePositionCommand(BotConfiguration configuration, IQueueService service, IUserRepository userRepository) : ICommand
 {
-    public string? Name => null;
-    public string? Description => null;
-
-    public IEnumerable<IChecker> Checkers { get; } = new IChecker[]
-    {
-        new CallbackDataChecker(KeyboardButton.UserKeyboardButton.CallbackPrefix),
-    };
-
     public async Task Execute(ClientUpdate update, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(update);

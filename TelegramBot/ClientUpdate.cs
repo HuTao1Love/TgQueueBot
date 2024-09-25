@@ -5,7 +5,7 @@ using Telegram.Bot.Types.Enums;
 using Telegram.Bot.Types.ReplyMarkups;
 using TelegramBot.Exceptions;
 
-namespace TelegramBot.Commands;
+namespace TelegramBot;
 
 public class ClientUpdate : Update
 {

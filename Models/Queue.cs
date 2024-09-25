@@ -36,7 +36,7 @@ public class Queue(long id, long tgChatId, long tgMessageId, string name, IEnume
     public KeyboardMarkup Markup(int maxButtonsInLine)
         => new KeyboardMarkup(Buttons, maxButtonsInLine)
             .NewLine()
-            .AddItems(new KeyboardButton.ResetKeyboardButton(), new KeyboardButton.StopKeyboardButton());
+            .AddItems(new KeyboardButton.SkipMeKeyboardButton(), new KeyboardButton.ResetKeyboardButton(), new KeyboardButton.StopKeyboardButton());
 
     public override string ToString()
         => $"{Name}:\n{string.Concat(Users.Select((u, index) => $"{index + 1}) @{u?.Name ?? GreenEmoji}\n"))}";

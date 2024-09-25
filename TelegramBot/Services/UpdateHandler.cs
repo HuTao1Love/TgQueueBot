@@ -1,12 +1,14 @@
+using System.Reflection;
 using Telegram.Bot;
 using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using TelegramBot.Commands;
+using TelegramBot.Rules;
 
 namespace TelegramBot.Services;
 
-public class UpdateHandler(IEnumerable<ICommand> commands) : IUpdateHandler
+public class UpdateHandler(IReadOnlyCollection<ICommand> commands) : IUpdateHandler
 {
     public async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
@@ -24,9 +26,22 @@ public class UpdateHandler(IEnumerable<ICommand> commands) : IUpdateHandler
 
         var clientUpdate = new ClientUpdate(update, botClient);
 
-        foreach (ICommand command in commands)
+        ICommand? command = (await Task.WhenAll(commands
+            .Select(c => new
+            {
+                Command = c,
+                Rules = c.GetType().GetCustomAttributes<RuleAttribute>(true),
+            })
+            .Select(async c => new
+            {
+                Command = c.Command,
+                CheckResult = await Task.WhenAll(c.Rules.Select(a => a.Check(clientUpdate, cancellationToken))),
+            })))
+            .FirstOrDefault(c => c.CheckResult.All(i => i))?
+            .Command;
+
+        if (command is not null)
         {
-            if (!await command.Check(clientUpdate, cancellationToken)) continue;
             await command.Execute(clientUpdate, cancellationToken);
         }
     }

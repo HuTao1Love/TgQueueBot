@@ -1,22 +1,15 @@
 using Contracts;
 using Contracts.Repositories;
 using Telegram.Bot.Types;
-using TelegramBot.Commands.Checkers;
+using TelegramBot.Rules;
 using User = Models.User;
 
-namespace TelegramBot.Commands.Commands;
+namespace TelegramBot.Commands;
 
+[NewMessage("/admin", "/setadmin", Name = "admin", Description = "Set admin (need reply to user's message)")]
+[UserIsCreatorRule("Only for Hu Tao")]
 public class SetAdminCommand(BotConfiguration configuration, IUserRepository userRepository) : ICommand
 {
-    public string? Name => "admin";
-    public string? Description => "Set admin (need reply to user's message)";
-
-    public IEnumerable<IChecker> Checkers { get; } = new IChecker[]
-    {
-        new CommandChecker(configuration.BotPrefix, "admin", "setadmin"),
-        new UserIsCreatorChecker(configuration, "Only for Hu Tao"),
-    };
-
     public async Task Execute(ClientUpdate update, CancellationToken token)
     {
         ArgumentNullException.ThrowIfNull(update);
