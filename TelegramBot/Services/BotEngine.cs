@@ -1,6 +1,5 @@
 using System.Reflection;
 using Telegram.Bot;
-using Telegram.Bot.Exceptions;
 using Telegram.Bot.Polling;
 using Telegram.Bot.Types;
 using TelegramBot.Commands;
@@ -8,9 +7,9 @@ using TelegramBot.Rules;
 
 namespace TelegramBot.Services;
 
-#pragma warning disable SK1200
-public class BotEngine(ITelegramBotClient telegramBotClient, IReadOnlyCollection<ICommand> commands, BotContext botContext)
+public class BotEngine(ITelegramBotClient telegramBotClient, IEnumerable<ICommand> commands, BotContext botContext)
 {
+    private IReadOnlyCollection<ICommand> _commands = commands.ToList();
     public async Task ListenForMessagesAsync()
     {
         var receiverOptions = new ReceiverOptions { AllowedUpdates = { }, }; // receive all update types
@@ -27,7 +26,7 @@ public class BotEngine(ITelegramBotClient telegramBotClient, IReadOnlyCollection
 
         IUpdateHandler updateHandler = new UpdateHandlerNotAwaitUpdatesProxy(
             new UpdateHandlerCatchExceptionsProxy(
-                new UpdateHandler(commands)));
+                new UpdateHandler(_commands)));
 
         await telegramBotClient.ReceiveAsync(
             updateHandler,

@@ -8,8 +8,10 @@ using TelegramBot.Rules;
 
 namespace TelegramBot.Services;
 
-public class UpdateHandler(IReadOnlyCollection<ICommand> commands) : IUpdateHandler
+public class UpdateHandler(IEnumerable<ICommand> commands) : IUpdateHandler
 {
+    private IReadOnlyCollection<ICommand> _commands = commands.ToList();
+
     public async Task HandleUpdateAsync(ITelegramBotClient botClient, Update update, CancellationToken cancellationToken)
     {
         ArgumentNullException.ThrowIfNull(update);
@@ -26,7 +28,7 @@ public class UpdateHandler(IReadOnlyCollection<ICommand> commands) : IUpdateHand
 
         var clientUpdate = new ClientUpdate(update, botClient);
 
-        ICommand? command = (await Task.WhenAll(commands
+        ICommand? command = (await Task.WhenAll(_commands
             .Select(c => new
             {
                 Command = c,
