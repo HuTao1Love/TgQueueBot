@@ -6,6 +6,7 @@
   <ItemGroup>
     <PackageVersion Include="coverlet.collector" Version="6.0.0" />
     <PackageVersion Include="EntityFramework" Version="6.4.4" />
+    <PackageVersion Include="JetBrains.Annotations" Version="2024.2.0" />
     <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.0-preview.2.24128.4" />
     <PackageVersion Include="Microsoft.Extensions.Configuration" Version="9.0.0-preview.1.24080.9" />
     <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="9.0.0-preview.1.24080.9" />

@@ -9,4 +9,5 @@ public interface IQueueService
     Task<QueueUpdateResult> UserAction(long tgChatId, long tgMessageId, User user, int position);
     Task<Queue> ResetQueue(Queue queue);
     Task<Queue?> DeleteQueue(long tgChatId, long tgMessageId);
+    Task<Queue?> RemoveUserFromQueue(long tgChatId, long tgMessageId, long userId);
 }

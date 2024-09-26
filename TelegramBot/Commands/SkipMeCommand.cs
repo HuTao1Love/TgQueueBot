@@ -19,15 +19,9 @@ public class SkipMeCommand(BotConfiguration configuration, IQueueService service
         Message? message = update.CallbackQuery?.Message;
         if (message is null) return;
 
-        Queue? queue = await service.FindQueue(
-            message.Chat.Id,
-            message.MessageId);
+        Queue? queue = await service.RemoveUserFromQueue(message.Chat.Id, message.MessageId, update.CallbackQuery!.From.Id);
 
-        if (queue is null) return;
-
-        int? index = UserPosition(queue.Users, update.CallbackQuery!.From.Id);
-
-        if (!index.HasValue)
+        if (queue is null)
         {
             await update.TelegramBotClient.AnswerCallbackQueryAsync(
                 update.CallbackQuery!.Id,
@@ -37,13 +31,10 @@ public class SkipMeCommand(BotConfiguration configuration, IQueueService service
             return;
         }
 
-        queue.Users.RemoveAt(index.Value);
-        queue.Users.Add(null);
-
         await update.TelegramBotClient.EditTextAsync(
             message.Chat.Id,
             message.MessageId,
-            queue.ToString(),
+            queue!.ToString(),
             queue.Markup(configuration.MaxItemsPerKeyboardLine).ToTelegramKeyboardMarkup(),
             token);
     }

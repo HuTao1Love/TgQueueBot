@@ -6,6 +6,6 @@ public interface IUserQueueRepository
 {
     Task<IEnumerable<UsersQueueData>> FindUsersByQueueId(long id);
     Task AddUser(long id, User user, int position);
-    Task RemoveUser(long id, User user);
+    Task RemoveUser(long id, User user, bool deletePosition);
     Task RemoveUsersByQueueId(long id);
 }

@@ -1,7 +1,5 @@
 ﻿namespace Contracts.Repositories;
 
-#pragma warning disable CA1711
-#pragma warning disable SK1200
 public class UsersQueueData
 {
     public long Id { get; set; }

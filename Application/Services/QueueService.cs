@@ -53,7 +53,7 @@ public class QueueService(IQueueRepository queueRepository, IUserQueueRepository
             }
 
             queue.Users[position] = null;
-            await userQueueRepository.RemoveUser(queue.Id, user);
+            await userQueueRepository.RemoveUser(queue.Id, user, false);
 
             return new QueueUpdateResult.SuccessfulQuitResult(queue);
         }
@@ -99,6 +99,20 @@ public class QueueService(IQueueRepository queueRepository, IUserQueueRepository
         await userQueueRepository.RemoveUsersByQueueId(queue.Id);
         await queueRepository.Remove(tgChatId, tgMessageId);
 
+        return queue;
+    }
+
+    public async Task<Queue?> RemoveUserFromQueue(long tgChatId, long tgMessageId, long userId)
+    {
+        Queue? queue = await FindQueue(tgChatId, tgMessageId);
+        if (queue is null) return null;
+
+        User? user = queue.Users.FirstOrDefault(u => u is not null && u.TgId == userId);
+        if (user is null) return null;
+
+        queue.Users.Remove(user);
+        queue.Users.Add(null);
+        await userQueueRepository.RemoveUser(queue.Id, user, true);
         return queue;
     }
 

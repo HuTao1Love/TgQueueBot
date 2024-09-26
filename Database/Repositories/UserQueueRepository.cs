@@ -26,7 +26,7 @@ public class UserQueueRepository(IDbContextFactory<PostgresContext> contextFacto
         await context.SaveChangesAsync();
     }
 
-    public async Task RemoveUser(long id, User user)
+    public async Task RemoveUser(long id, User user, bool deletePosition)
     {
         ArgumentNullException.ThrowIfNull(user);
         await using PostgresContext context = await contextFactory.CreateDbContextAsync();
@@ -35,6 +35,16 @@ public class UserQueueRepository(IDbContextFactory<PostgresContext> contextFacto
         if (usersQueueData is null) return;
 
         context.UsersQueues.Remove(usersQueueData);
+
+        if (deletePosition)
+        {
+            await context.UsersQueues
+                .Where(uq => uq.QueueId == id && usersQueueData.Position > uq.Position)
+                .ExecuteUpdateAsync(uq => uq.SetProperty(
+                    i => i.Position,
+                    i => i.Position - 1));
+        }
+
         await context.SaveChangesAsync();
     }
 
