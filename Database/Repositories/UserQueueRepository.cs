@@ -40,7 +40,7 @@ public class UserQueueRepository(IDbContextFactory<PostgresContext> contextFacto
                 .Where(uq => uq.QueueId == id && usersQueueData.Position > uq.Position)
                 .ExecuteUpdateAsync(uq => uq.SetProperty(
                     i => i.Position,
-                    i => i.Position - 1));
+                    i => int.Max(i.Position - 1, 0)));
         }
 
         context.UsersQueues.Remove(usersQueueData);
