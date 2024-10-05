@@ -36,8 +36,10 @@ public class UserQueueRepository(IDbContextFactory<PostgresContext> contextFacto
 
         if (deletePosition)
         {
+            int position = usersQueueData.Position;
+
             await context.UsersQueues
-                .Where(uq => uq.QueueId == id && usersQueueData.Position > uq.Position)
+                .Where(uq => uq.QueueId == id && position < uq.Position)
                 .ExecuteUpdateAsync(uq => uq.SetProperty(
                     i => i.Position,
                     i => int.Max(i.Position - 1, 0)));
