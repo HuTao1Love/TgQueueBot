@@ -105,12 +105,10 @@ public class QueueService(IQueueRepository queueRepository, IUserQueueRepository
     public async Task<Queue?> RemoveUserFromQueue(long tgChatId, long tgMessageId, long userId)
     {
         Queue? queue = await FindQueue(tgChatId, tgMessageId);
-        if (queue is null) return null;
-
-        User? user = queue.Users.FirstOrDefault(u => u is not null && u.TgId == userId);
+        User? user = queue?.Users.FirstOrDefault(u => u is not null && u.TgId == userId);
         if (user is null) return null;
 
-        queue.Users.Remove(user);
+        queue!.Users.Remove(user);
         queue.Users.Add(null);
         await userQueueRepository.RemoveUser(queue.Id, user, true);
         return queue;

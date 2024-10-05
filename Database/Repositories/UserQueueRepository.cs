@@ -34,8 +34,6 @@ public class UserQueueRepository(IDbContextFactory<PostgresContext> contextFacto
 
         if (usersQueueData is null) return;
 
-        context.UsersQueues.Remove(usersQueueData);
-
         if (deletePosition)
         {
             await context.UsersQueues
@@ -44,6 +42,8 @@ public class UserQueueRepository(IDbContextFactory<PostgresContext> contextFacto
                     i => i.Position,
                     i => i.Position - 1));
         }
+
+        context.UsersQueues.Remove(usersQueueData);
 
         await context.SaveChangesAsync();
     }
